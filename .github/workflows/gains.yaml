@@ -1,0 +1,37 @@
+name: Increment Number
+
+on:
+  schedule:
+    # Run daily at 12:00 AM MST on Monday through Saturday
+    # Honor the Sabbath
+    - cron: "0 7 * * 1-6"
+  workflow_dispatch:  # Enable manual trigger
+
+jobs:
+  increment-number:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Increment the number and store it in an environment variable
+      - name: Increment number.txt
+        id: increment_number
+        run: |
+          NEW_NUMBER=$(make increment)
+          echo "NEW_NUMBER=$NEW_NUMBER" >> $GITHUB_ENV
+
+      # Commit and push changes
+      - name: Commit and push changes
+        env:
+          GH_USERNAME: trpubins
+          GH_EMAIL: t.pubins@icloud.com
+          GH_TOKEN: ${{ secrets.INC_GAINS_PAT }}
+        run: |
+          git config --global user.name "${GH_USERNAME}"
+          git config --global user.email "${GH_EMAIL}"
+          git add number.txt
+          git commit -m "Increment number to ${{ env.NEW_NUMBER }}"
+          git push origin HEAD
