@@ -29,9 +29,10 @@ jobs:
           GH_USERNAME: trpubins
           GH_EMAIL: t.pubins@icloud.com
           GH_TOKEN: ${{ secrets.INC_GAINS_PAT }}
+          REPO: ${{ github.repository }}
         run: |
           git config --global user.name "${GH_USERNAME}"
           git config --global user.email "${GH_EMAIL}"
           git add number.txt
           git commit -m "Increment number to ${{ env.NEW_NUMBER }}"
-          git push origin HEAD
+          git push https://${GH_USERNAME}:${GH_TOKEN}@github.com/${REPO}.git HEAD:main
